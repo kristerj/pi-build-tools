@@ -1,0 +1,29 @@
+sudo apt update
+sudo apt upgrade
+sudo dpkg --add-architecture armhf
+sudo apt update
+sudo apt install qemu-user-static
+sudo apt install build-essential subversion cmake git python3-dev libncurses5-dev libxml2-dev libedit-dev swig doxygen graphviz xz-utils ninja-build
+sudo apt install crossbuild-essential-armhf
+sudo apt install libpython3-dev:armhf libncurses5-dev:armhf libxml2-dev:armhf libedit-dev:armhf
+cd ~
+mkdir llvm_all && cd llvm_all
+svn co https://llvm.org/svn/llvm-project/llvm/tags/RELEASE_900/final llvm
+cd llvm/tools
+svn co https://llvm.org/svn/llvm-project/cfe/tags/RELEASE_900/final clang
+cd ../..
+cd llvm/projects
+svn co https://llvm.org/svn/llvm-project/compiler-rt/tags/RELEASE_900/final compiler-rt
+svn co https://llvm.org/svn/llvm-project/lld/tags/RELEASE_900/final lld
+svn co https://llvm.org/svn/llvm-project/polly/tags/RELEASE_900/final polly
+svn co https://llvm.org/svn/llvm-project/libunwind/tags/RELEASE_900/final libunwind
+cd ~
+cd llvm_all
+svn co https://llvm.org/svn/llvm-project/libcxx/tags/RELEASE_900/final libcxx
+svn co https://llvm.org/svn/llvm-project/libcxxabi/tags/RELEASE_900/final libcxxabi
+svn co https://llvm.org/svn/llvm-project/openmp/tags/RELEASE_900/final openmp
+mkdir build_llvm && cd build_llvm
+make -G Ninja -DCMAKE_BUILD_TYPE=Release -DLLVM_BUILD_DOCS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/cross_armhf_clang_9.0.0 -DCMAKE_CROSSCOMPILING=True -DLLVM_DEFAULT_TARGET_TRIPLE=arm-linux-gnueabihf -DLLVM_TARGET_ARCH=ARM -DLLVM_TARGETS_TO_BUILD=ARM ../llvm
+
+ninja
+sudo ninja install
